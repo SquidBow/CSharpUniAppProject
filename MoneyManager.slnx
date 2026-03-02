@@ -3,4 +3,5 @@
   <Project Path="MoneyManager.Models/MoneyManager.Models.csproj" />
   <Project Path="MoneyManager.Services/MoneyManager.Services.csproj" />
   <Project Path="MoneyManager.Storage/MoneyManager.Storage.csproj" />
+  <Project Path="MoneyManager.WpfUI/MoneyManager.WpfUI.csproj" Id="ef6ae8cf-5a9e-4683-a11f-3e2151e298ef" />
 </Solution>

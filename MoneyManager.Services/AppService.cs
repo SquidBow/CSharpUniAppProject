@@ -3,21 +3,23 @@ using MoneyManager.Storage;
 
 namespace MoneyManager.Services;
 
-public class AppService
+public class AppService(IDataStorage storage) : IAppService
 {
+    private readonly IDataStorage storage = storage;
+
     public int FindMaxWalletID()
     {
-        return DataStorage.Wallets.Any() ? DataStorage.Wallets.Max(w => w.Id) + 1 : 1;
+        return storage.Wallets.Any() ? storage.Wallets.Max(w => w.Id) + 1 : 1;
     }
 
     public void AddWallet(Wallet wallet)
     {
-        DataStorage.Wallets.Add(wallet);
+        storage.Wallets.Add(wallet);
     }
 
     public void RemoveWallet(int walletId)
     {
-        Wallet? wallet = DataStorage.Wallets.Find(w => w.Id == walletId);
+        Wallet? wallet = storage.Wallets.Find(w => w.Id == walletId);
 
         if (wallet == null)
         {
@@ -26,37 +28,37 @@ public class AppService
             return;
         }
 
-        DataStorage.Transactions.RemoveAll(t => t.WalletId == walletId);
-        DataStorage.Wallets.Remove(wallet);
+        storage.Transactions.RemoveAll(t => t.WalletId == walletId);
+        storage.Wallets.Remove(wallet);
     }
 
     public Wallet? FindWallet(int walletId)
     {
-        return DataStorage.Wallets.Find(w => w.Id == walletId);
+        return storage.Wallets.Find(w => w.Id == walletId);
     }
 
     public int FindMaxTransactionID()
     {
-        return DataStorage.Transactions.Any() ? DataStorage.Transactions.Max(t => t.Id) + 1 : 1;
+        return storage.Transactions.Any() ? storage.Transactions.Max(t => t.Id) + 1 : 1;
     }
 
     public void AddTransaction(Transaction t, Wallet wallet)
     {
-        DataStorage.Transactions.Add(t);
+        storage.Transactions.Add(t);
         wallet.TransactionIds.Add(t.Id);
     }
 
     public List<Transaction> GetWalletTransactions(int walletId)
     {
         // Return all transactions which have the same wallet connected as the wallet we are searching for
-        return DataStorage.Transactions
+        return storage.Transactions
             .Where(t => t.WalletId == walletId)
             .ToList();
     }
 
     public void ListWallets()
     {
-        var wallets = DataStorage.Wallets;
+        var wallets = storage.Wallets;
         if (!wallets.Any())
         {
             return;

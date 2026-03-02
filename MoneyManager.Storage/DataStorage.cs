@@ -1,18 +1,19 @@
 using MoneyManager.Models;
+using System.Collections.Generic;
 
 namespace MoneyManager.Storage;
 
-public static class DataStorage
+public class DataStorage : IDataStorage
 {
-    public static List<Wallet> Wallets { get; } = new();
-    public static List<Transaction> Transactions { get; } = new();
+    public List<Wallet> Wallets { get; } = new();
+    public List<Transaction> Transactions { get; } = new();
 
-    static DataStorage()
+    public DataStorage()
     {
         AddInitialTransactions();
     }
 
-    private static void AddInitialTransactions()
+    void AddInitialTransactions()
     {
         Wallet wallet1 = new Wallet(1, "Main Card", Currencies.UAH);
         Wallet wallet2 = new Wallet(2, "Cash", Currencies.USD);

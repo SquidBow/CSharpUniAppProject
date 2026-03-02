@@ -1,14 +1,38 @@
 using MoneyManager.Models;
 using MoneyManager.Services;
+using MoneyManager.Storage;
 
 namespace MoneyManager.ConsoleApp;
 
-class Program
+class Program : IProgram
 {
-    private static readonly AppService service = new AppService();
+    private static readonly DataStorage storage = new DataStorage();
+    private static readonly AppService service = new AppService(storage);
 
-    static void Main()
+    AppService GetAppService()
     {
+        return service;
+    }
+
+    DataStorage GetDataStorage()
+    {
+        return storage;
+    }
+
+    Program ()
+    {
+    }
+
+    public static void Main()
+    {
+        Program program = new();
+        ((IProgram)program).Main();
+    }
+
+    void IProgram.Main()
+    {
+        Program notIProgram = new();
+        IProgram program = (IProgram)notIProgram;
         string choice = "";
 
         while (choice != "8")
@@ -29,36 +53,36 @@ class Program
             switch (choice)
             {
                 case "1":
-                    ListWallets();
+                    program.ListWallets();
                     break;
                 case "2":
-                    CreateWallet();
+                    program.CreateWallet();
                     break;
                 case "3":
-                    RemoveWallet();
+                    program.RemoveWallet();
                     break;
                 case "4":
-                    AddTransaction();
+                    program.AddTransaction();
                     break;
                 case "5":
-                    ListTransactions();
+                    program.ListTransactions();
                     break;
                 case "6":
-                    FilterTransactions();
+                    program.FilterTransactions();
                     break;
                 case "7":
-                    OrderTransactions();
+                    program.OrderTransactions();
                     break;
             }
         }
     }
 
-    static void ListWallets()
+    void IProgram.ListWallets()
     {
         service.ListWallets();
     }
 
-    static void CreateWallet()
+    void IProgram.CreateWallet()
     {
         Console.Write("Enter Wallet Name: ");
         string name = Console.ReadLine() ?? "New Wallet";
@@ -88,7 +112,7 @@ class Program
         Console.WriteLine();
     }
 
-    static void RemoveWallet()
+    void IProgram.RemoveWallet()
     {
         Console.Write("Enter Wallet ID to remove: ");
         if (!int.TryParse(Console.ReadLine() ?? "", out int walletId))
@@ -103,7 +127,7 @@ class Program
         Console.WriteLine();
     }
 
-    static void AddTransaction()
+    void IProgram.AddTransaction()
     {
         Console.Write("Enter Wallet ID: ");
         if (!int.TryParse(Console.ReadLine() ?? "", out int walletId))
@@ -161,7 +185,7 @@ class Program
         Console.WriteLine();
     }
 
-    static void ListTransactions()
+    void IProgram.ListTransactions()
     {
         Console.Write("Enter Wallet ID: ");
         if (!int.TryParse(Console.ReadLine(), out int walletId))
@@ -189,7 +213,7 @@ class Program
         Console.WriteLine();
     }
 
-    static void FilterTransactions()
+    void IProgram.FilterTransactions()
     {
         Console.Write("\nEnter the id of the Wallet to filter transactions for: ");
         string input = Console.ReadLine() ?? "";
@@ -304,7 +328,7 @@ class Program
         Console.WriteLine();
     }
 
-    static void OrderTransactions()
+    void IProgram.OrderTransactions()
     {
         Console.Write("\nEnter the id of the Wallet to order transactions for: ");
         string input = Console.ReadLine() ?? "";

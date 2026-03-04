@@ -12,7 +12,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using MoneyManager.ConsoleApp;
 
 
 namespace MoneyManager.WpfUI

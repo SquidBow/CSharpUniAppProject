@@ -2,7 +2,6 @@ namespace MoneyManager.Models;
 
 public enum Currencies
 {
-    None,
     UAH,
     USD,
     EUR

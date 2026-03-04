@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,18 +21,36 @@ namespace MoneyManager.WpfUI
     /// </summary>
     public partial class IndividualWallet : Page
     {
-        public IndividualWallet(Wallet wallet, IAppService service)
+        ObservableCollection<Transaction> transactions;
+        Wallet currentWallet;
+        IAppService service;
+
+        public IndividualWallet(Wallet wallet, IAppService serviceIn)
         {
             InitializeComponent();
-            List<Transaction> transactions = service.GetWalletTransactions(wallet.Id);
+            transactions = new ObservableCollection<Transaction>(serviceIn.GetWalletTransactions(wallet.Id));
             this.DataContext = wallet;
             TrasactionList.ItemsSource = transactions;
+            currentWallet = wallet;
+            service = serviceIn;
         }
 
         private void ShowIndividualTransactio(object sender, MouseButtonEventArgs e)
         {
-            Transaction selectedWallet = (Transaction)TrasactionList.SelectedItem;
-            NavigationService.Navigate(new IndividualTransaction(selectedWallet));
+            Transaction selectedTransaction = (Transaction)TrasactionList.SelectedItem;
+            NavigationService.Navigate(new IndividualTransaction(selectedTransaction));
+        }
+
+        private void AddButton(object sender, RoutedEventArgs e)
+        {
+            AddTransactionPage addPage = new(transactions, currentWallet.Id, service);
+            NavigationService.Navigate(addPage);
+        }
+
+        private void SubButton(object sender, RoutedEventArgs e)
+        {
+            Transaction selectedTransaction = (Transaction)TrasactionList.SelectedItem;
+            transactions.Remove(selectedTransaction);
         }
     }
 }

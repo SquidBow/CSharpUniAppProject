@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MoneyManager.ConsoleApp\MoneyManager.ConsoleApp.csproj" />
     <ProjectReference Include="..\MoneyManager.Models\MoneyManager.Models.csproj" />
     <ProjectReference Include="..\MoneyManager.Services\MoneyManager.Services.csproj" />
     <ProjectReference Include="..\MoneyManager.Storage\MoneyManager.Storage.csproj" />

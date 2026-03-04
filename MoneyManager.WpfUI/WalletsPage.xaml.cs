@@ -32,7 +32,14 @@ namespace MoneyManager.WpfUI
 
         private void AddButton(object sender, RoutedEventArgs e)
         {
+            AddWalletPage addPage = new AddWalletPage(wallets, service);
+            NavigationService.Navigate(addPage);
+        }
 
+        private void SubButton(object sender, RoutedEventArgs e)
+        {
+            Wallet selectedWallet = (Wallet)WalletsList.SelectedItem;
+            wallets.Remove(selectedWallet);
         }
 
         private void ShowIndividualWallet(object sender, MouseButtonEventArgs e)

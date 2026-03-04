@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="MoneyManager.ConsoleApp/MoneyManager.ConsoleApp.csproj" />
   <Project Path="MoneyManager.Models/MoneyManager.Models.csproj" />
   <Project Path="MoneyManager.Services/MoneyManager.Services.csproj" />
   <Project Path="MoneyManager.Storage/MoneyManager.Storage.csproj" />

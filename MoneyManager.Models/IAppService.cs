@@ -2,11 +2,11 @@ namespace MoneyManager.Models;
 
 public interface IAppService
 {
-    int FindMaxWalletID();
-    void AddWallet(Wallet wallet);
+    List<WalletListDto> GetWalletsForList();
+    WalletDetailsDto? GetWalletDetails(int walletId);
+    void AddWallet(string name, string currency);
     void RemoveWallet(int walletId);
-    Wallet? FindWallet(int walletId);
-    int FindMaxTransactionID();
-    void AddTransaction(Transaction t, Wallet wallet);
-    List<Transaction> GetWalletTransactions(int walletId);
+    void AddTransaction(int walletId, decimal sum, string type, string description);
+    void RemoveTransaction(int transactionId);
+    TransactionDetailsDto? GetTransactionDetails(int transactionId);
 }

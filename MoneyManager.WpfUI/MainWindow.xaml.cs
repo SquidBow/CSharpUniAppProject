@@ -1,30 +1,18 @@
-﻿using MoneyManager.Models;
-using MoneyManager.Storage;
-using MoneyManager.Services;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-
 
 namespace MoneyManager.WpfUI
 {
     public partial class MainWindow : Window
     {
-       
-
-        public MainWindow(IDataStorage storage, IAppService service)
+        public MainWindow(Services.INavigationService navService, WalletsPage walletsPage)
         {
             InitializeComponent();
+            var nav = (Services.NavigationService)navService;
+            var field = typeof(Services.NavigationService).GetField("frame", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Content = (Frame)field.GetValue(nav);
 
-            MainFrame.Navigate(new WalletsPage(storage, service));
+            navService.NavigateTo(walletsPage);
         }
     }
 }

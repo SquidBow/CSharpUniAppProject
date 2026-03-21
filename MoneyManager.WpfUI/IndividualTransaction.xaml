@@ -1,19 +1,15 @@
 ﻿<Page x:Class="MoneyManager.WpfUI.IndividualTransaction"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:MoneyManager.WpfUI"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
       Title="IndividualTransaction">
 
-    <StackPanel Margin="10">
+    <StackPanel>
         <TextBlock Text="{Binding Id, StringFormat='ID: {0}'}" FontWeight="Bold" />
-        <TextBlock Text="{Binding WalletId, StringFormat='WalletID: {0}'}" FontWeight="Bold" />
         <TextBlock Text="{Binding Sum, StringFormat='Sum: {0}'}" FontWeight="Bold" />
-        <TextBlock Text="{Binding Type, StringFormat='Spending: {0}'}" FontWeight="Bold" />
+        <TextBlock Text="{Binding Type, StringFormat='Type: {0}'}" FontWeight="Bold" />
         <TextBlock Text="{Binding Description, StringFormat='Description: {0}'}" FontWeight="Bold" />
-        <TextBlock Text="{Binding Date, StringFormat='Date: {0}'}" FontWeight="Bold" />
+        <TextBlock Text="{Binding Date, StringFormat='Date: {0:yyyy-MM-dd}'}" FontWeight="Bold" />
+
+        <Button Content="Back" Command="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.BackCommand}" Visibility="Collapsed"/>
     </StackPanel>
 </Page>

@@ -1,76 +1,110 @@
 using MoneyManager.Models;
-using MoneyManager.Storage;
+using MoneyManager.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MoneyManager.Services;
 
-public class AppService(IDataStorage storage) : IAppService
+public class AppService : IAppService
 {
-    private readonly IDataStorage storage = storage;
+    private readonly IWalletRepository walletRepo;
+    private readonly ITransactionRepository transactionRepo;
 
-    public int FindMaxWalletID()
+    public AppService(IWalletRepository walletRepo, ITransactionRepository transactionRepo)
     {
-        return storage.Wallets.Any() ? storage.Wallets.Max(w => w.Id) + 1 : 1;
+        this.walletRepo = walletRepo;
+        this.transactionRepo = transactionRepo;
     }
 
-    public void AddWallet(Wallet wallet)
+    public List<WalletListDto> GetWalletsForList()
     {
-        storage.Wallets.Add(wallet);
+        var wallets = walletRepo.GetAll();
+        return wallets.Select(w => new WalletListDto
+        {
+            Id = w.Id,
+            Name = w.Name,
+            Balance = transactionRepo.GetByWalletId(w.Id).Sum(t => t.Sum)
+        }).ToList();
+    }
+
+    public void RemoveTransaction(int transactionId)
+    {
+        this.transactionRepo.Remove(transactionId);
+    }
+
+    public WalletDetailsDto? GetWalletDetails(int walletId)
+    {
+        var wallet = walletRepo.GetById(walletId);
+        if (wallet == null) return null;
+
+        var transactions = transactionRepo.GetByWalletId(walletId);
+
+        return new WalletDetailsDto
+        {
+            Id = wallet.Id,
+            Name = wallet.Name,
+            Currency = wallet.Currency.ToString(),
+            Balance = transactions.Sum(t => t.Sum),
+            Transactions = transactions.Select(t => new TransactionListDto
+            {
+                Id = t.Id,
+                Sum = t.Sum,
+                Type = t.Type.ToString(),
+                Description = t.Description,
+                Date = t.Date
+            }).ToList()
+        };
+    }
+
+    public TransactionDetailsDto? GetTransactionDetails(int transactionId)
+    {
+        var t = transactionRepo.GetById(transactionId);
+        if (t == null) return null;
+
+        return new TransactionDetailsDto
+        {
+            Id = t.Id,
+            Sum = t.Sum,
+            Type = t.Type.ToString(),
+            Description = t.Description,
+            Date = t.Date
+        };
+    }
+
+    public void AddWallet(string name, string currency)
+    {
+        var id = walletRepo.GetAll().Any() ? walletRepo.GetAll().Max(w => w.Id) + 1 : 1;
+        var currencyEnum = Enum.Parse<Currencies>(currency);
+        walletRepo.Add(new Wallet(id, name, currencyEnum));
     }
 
     public void RemoveWallet(int walletId)
     {
-        Wallet? wallet = storage.Wallets.Find(w => w.Id == walletId);
+        transactionRepo.RemoveByWalletId(walletId);
+        walletRepo.Remove(walletId);
+    }
 
-        if (wallet == null)
+    public void AddTransaction(int walletId, decimal sum, string type, string description)
+    {
+        var wallet = walletRepo.GetById(walletId);
+        if (wallet == null) return;
+
+        int maxId = 0;
+        foreach (var w in walletRepo.GetAll())
         {
-            Console.WriteLine("Wallet wasn't found.");
-            Console.WriteLine();
-            return;
+            var ts = transactionRepo.GetByWalletId(w.Id);
+            if (ts.Any())
+            {
+                var localMax = ts.Max(t => t.Id);
+                if (localMax > maxId) maxId = localMax;
+            }
         }
 
-        storage.Transactions.RemoveAll(t => t.WalletId == walletId);
-        storage.Wallets.Remove(wallet);
-    }
+        var spendingType = Enum.Parse<Spending>(type);
+        var transaction = new Transaction(maxId + 1, walletId, sum, spendingType, description);
 
-    public Wallet? FindWallet(int walletId)
-    {
-        return storage.Wallets.Find(w => w.Id == walletId);
-    }
-
-    public int FindMaxTransactionID()
-    {
-        return storage.Transactions.Any() ? storage.Transactions.Max(t => t.Id) + 1 : 1;
-    }
-
-    public void AddTransaction(Transaction t, Wallet wallet)
-    {
-        storage.Transactions.Add(t);
-        wallet.TransactionIds.Add(t.Id);
-    }
-
-    public List<Transaction> GetWalletTransactions(int walletId)
-    {
-        // Return all transactions which have the same wallet connected as the wallet we are searching for
-        return storage.Transactions
-            .Where(t => t.WalletId == walletId)
-            .ToList();
-    }
-
-    public void ListWallets()
-    {
-        var wallets = storage.Wallets;
-        if (!wallets.Any())
-        {
-            return;
-        }
-
-        foreach (var w in wallets)
-        {
-            // Get the ballance of the wallet by summing all the transactions
-            decimal balance = GetWalletTransactions(w.Id).Sum(t => t.Sum);
-            Console.WriteLine($"ID: {w.Id}\t Name: {w.Name}\t Currency: {w.Currency}\t Balance: {balance:F2}");
-        }
-
-        Console.WriteLine();
+        transactionRepo.Add(transaction);
+        wallet.TransactionIds.Add(transaction.Id);
     }
 }

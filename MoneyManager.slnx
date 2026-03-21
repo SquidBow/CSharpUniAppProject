@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="MoneyManager.Models/MoneyManager.Models.csproj" />
+  <Project Path="MoneyManager.Repositories/MoneyManager.Repositories.csproj" Id="53fd7aef-1539-4f98-b2c4-666f32f1c6f3" />
   <Project Path="MoneyManager.Services/MoneyManager.Services.csproj" />
   <Project Path="MoneyManager.Storage/MoneyManager.Storage.csproj" />
   <Project Path="MoneyManager.WpfUI/MoneyManager.WpfUI.csproj" Id="ef6ae8cf-5a9e-4683-a11f-3e2151e298ef" />

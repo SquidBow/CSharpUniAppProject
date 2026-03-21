@@ -1,3 +1,4 @@
+using MoneyManager.Models;
 namespace MoneyManager.Models;
 
 public interface IDataStorage

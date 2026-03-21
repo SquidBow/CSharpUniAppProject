@@ -1,18 +1,7 @@
 namespace MoneyManager.Models;
 
-public enum Currencies
-{
-    UAH,
-    USD,
-    EUR
-}
-public enum Spending
-{
-    None,
-    Cafe,
-    Groceries,
-    Car,
-}
+public enum Currencies { UAH, USD, EUR }
+public enum Spending { None, Cafe, Groceries, Car }
 
 public class Wallet
 {

@@ -1,17 +1,62 @@
 using MoneyManager.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Text.Json;
+using System.IO;
 
 namespace MoneyManager.Storage;
 
 public class DataStorage : IDataStorage
 {
-    public List<Wallet> Wallets { get; } = new();
-    public List<Transaction> Transactions { get; } = new();
+    public List<Wallet> Wallets { get; private set; } = new();
+    public List<Transaction> Transactions { get; private set; } = new();
 
     public DataStorage()
     {
-        SeedData();
+        // SeedData();
+    }
+
+    public class AppData
+    {
+        public List<Wallet> Wallets { get; set; }
+        public List<Transaction> Transactions { get; set; }
+    }
+
+    public async Task SaveData()
+    {
+        var data = new AppData
+        {
+            Wallets = this.Wallets,
+            Transactions = this.Transactions
+        };
+
+        using var stream = File.Create("data.json");
+        await JsonSerializer.SerializeAsync(stream, data);
+    }
+
+    public async Task LoadData()
+    {
+        if (!File.Exists("data.json"))
+        {
+            SeedData();
+            await SaveData();
+            return;
+        }
+
+        using var stream = File.OpenRead("data.json");
+
+        var data = await JsonSerializer.DeserializeAsync<AppData>(stream);
+
+        if (data != null)
+        {
+            Wallets.Clear();
+            Wallets.AddRange(data.Wallets);
+            Transactions.Clear();
+            Transactions.AddRange(data.Transactions);
+        }
+
+        // await Task.Delay(5000);
     }
 
     void SeedData()

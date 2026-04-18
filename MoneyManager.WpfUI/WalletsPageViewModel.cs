@@ -1,8 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows.Input;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MoneyManager.Models;
 using MoneyManager.WpfUI.Services;
-using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace MoneyManager.WpfUI.ViewModels
 {
@@ -22,10 +23,34 @@ namespace MoneyManager.WpfUI.ViewModels
             }
         }
 
+        public ObservableCollection<WalletListDto> ShownWallets { get; set; } = new();
+
+        public string FilterText = "";
+
         public ICommand RemoveCommand { get; }
         public ICommand AddCommand { get; }
+        public ICommand EditCommand { get; }
 
         public ICommand ShowDetailsCommand { get; }
+
+        private string currentSort = "Id";
+        private bool sortAscending = true;
+
+        public void SortBy(string field)
+        {
+            if (field!= "")
+            {
+                if (currentSort == field)
+                    sortAscending = !sortAscending;
+                else
+                {
+                    currentSort = field;
+                    sortAscending = true;
+                }
+            }
+            
+            UpdateShownWallets(FilterText);
+        }
 
         private void ShowDetails(object? parameter)
         {
@@ -50,6 +75,7 @@ namespace MoneyManager.WpfUI.ViewModels
             LoadWallets();
             RemoveCommand = new RelayCommand(RemoveWallet);
             AddCommand = new RelayCommand(AddWallet);
+            EditCommand = new RelayCommand(EditWallet);
             ShowDetailsCommand = new RelayCommand(ShowDetails);
         }
 
@@ -57,13 +83,16 @@ namespace MoneyManager.WpfUI.ViewModels
         {
             var data = service.GetWalletsForList();
             Wallets = new ObservableCollection<WalletListDto>(data);
+            ShownWallets = new ObservableCollection<WalletListDto>(Wallets);
+            SortBy("");
         }
 
-        private void RemoveWallet(object? parameter)
+        private async void RemoveWallet(object? parameter)
         {
             if (parameter is int id)
             {
                 service.RemoveWallet(id);
+                await service.SaveData();
                 LoadWallets();
             }
         }
@@ -72,6 +101,34 @@ namespace MoneyManager.WpfUI.ViewModels
         {
             var addPage = App.ServiceProvider.GetRequiredService<AddWalletPage>();
             navigationService.NavigateTo(addPage);
+        }
+
+        private void EditWallet(object? parameter)
+        {
+            if (parameter is WalletListDto selectedWallet)
+            {
+                var wallet = service.GetWalletById(selectedWallet.Id);
+                var addPage = App.ServiceProvider.GetRequiredService<AddWalletPage>();
+                if (addPage.DataContext is AddWalletPageViewModel vm)
+                {
+                    vm.Init(wallet);
+                }
+                navigationService.NavigateTo(addPage);
+            }
+        }
+
+        public void UpdateShownWallets(string filterText)
+        {
+            FilterText = filterText;
+            var filtered = Wallets.Where(w => w.Name.Contains(filterText, StringComparison.OrdinalIgnoreCase));
+            var ordered = currentSort switch
+            {
+                "Balance" => sortAscending ? filtered.OrderBy(w => w.Balance) : filtered.OrderByDescending(w => w.Balance),
+                "Name" => sortAscending ? filtered.OrderBy(w => w.Name) : filtered.OrderByDescending(w => w.Name),
+                "Id" => sortAscending ? filtered.OrderBy(w => w.Id) : filtered.OrderByDescending(w => w.Id)
+            };
+            ShownWallets = new ObservableCollection<WalletListDto>(ordered);
+            OnPropertyChanged("ShownWallets");
         }
     }
 }

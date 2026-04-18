@@ -3,21 +3,33 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="WalletsPage">
 
-    <Grid RowDefinitions="Auto, Auto, *">
-        <Grid ColumnDefinitions="*, *" Grid.Row="0">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *">
+        <Grid ColumnDefinitions="*" Grid.Row="0">
+            <TextBlock Text="Filter By Name" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
+        </Grid>
+
+
+        <Grid ColumnDefinitions="*" Grid.Row="1">
+            <TextBox TextChanged="UpdateShownWallets"/>
+        </Grid>
+
+        <Grid ColumnDefinitions="*, *, *" Grid.Row="2">
             <Button Grid.Column="0" Content="+" Command="{Binding AddCommand}"/>
-            <Button Grid.Column="1" Content="-" 
+            <Button Grid.Column="1" Content="Edit" 
+                    Command="{Binding EditCommand}" 
+                    CommandParameter="{Binding SelectedItem, ElementName=WalletsList}"/>
+            <Button Grid.Column="2" Content="-" 
                     Command="{Binding RemoveCommand}" 
                     CommandParameter="{Binding SelectedItem.Id, ElementName=WalletsList}"/>
         </Grid>
 
-        <Grid ColumnDefinitions="30, *, *" Grid.Row="1">
-            <TextBlock Grid.Column="0" Text="ID" FontWeight="ExtraBold" HorizontalAlignment="Left"/>
-            <TextBlock Grid.Column="1" Text="Name" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Text="Balance" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
+        <Grid ColumnDefinitions="30, *, *" Grid.Row="3">
+            <Button Grid.Column="0" Content="ID" FontWeight="ExtraBold" HorizontalAlignment="Center" Click="SortById"/>
+            <Button Grid.Column="1" Content="Name" FontWeight="ExtraBold" HorizontalAlignment="Center" Click="SortByName"/>
+            <Button Grid.Column="2" Content="Balance" FontWeight="ExtraBold" HorizontalAlignment="Center" Click="SortByBalance"/>
         </Grid>
 
-        <ListBox Grid.Row="2" x:Name="WalletsList" ItemsSource="{Binding Wallets}" HorizontalContentAlignment="Stretch">
+        <ListBox Grid.Row="4" x:Name="WalletsList" ItemsSource="{Binding ShownWallets}" HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1" Background="Transparent">

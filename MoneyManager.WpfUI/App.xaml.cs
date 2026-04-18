@@ -39,6 +39,8 @@ namespace MoneyManager.WpfUI
             services.AddTransient<ViewModels.AddWalletPageViewModel>();
             services.AddTransient<AddWalletPage>();
 
+            services.AddTransient<LoadingPage>();
+
             ServiceProvider = services.BuildServiceProvider();
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();

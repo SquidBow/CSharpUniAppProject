@@ -25,7 +25,7 @@ namespace MoneyManager.Models
         public decimal Sum { get; set; }
         public string Type { get; set; }
         public string Description { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
     }
 
     public class TransactionDetailsDto
@@ -34,6 +34,6 @@ namespace MoneyManager.Models
         public decimal Sum { get; set; }
         public string Type { get; set; }
         public string Description { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
     }
 }

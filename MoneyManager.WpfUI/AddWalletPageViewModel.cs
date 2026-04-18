@@ -14,6 +14,9 @@ namespace MoneyManager.WpfUI.ViewModels
         private string walletName;
         private string selectedCurrency;
 
+        private bool isEditMode = false;
+        private int editWalletId = -1;
+
         public string WalletName
         {
             get { return walletName; }
@@ -41,13 +44,30 @@ namespace MoneyManager.WpfUI.ViewModels
             CancelCommand = new RelayCommand(param => this.navigationService.GoBack());
         }
 
-        private void Save(object? parameter)
+        private async void Save(object? parameter)
         {
-            if (!string.IsNullOrWhiteSpace(WalletName))
+            if (isEditMode)
             {
-                service.AddWallet(WalletName, SelectedCurrency);
-                navigationService.GoBack();
+                service.UpdateWallet(editWalletId, this.walletName, this.selectedCurrency);
             }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(WalletName))
+                {
+                    service.AddWallet(WalletName, SelectedCurrency);
+                }
+            }
+            await service.SaveData();
+            navigationService.GoBack();
+        }
+
+        public void Init(Wallet wallet)
+        {
+            WalletName = wallet.Name;
+            SelectedCurrency = wallet.Currency.ToString();
+            editWalletId = wallet.Id;
+
+            isEditMode = true;
         }
     }
 }

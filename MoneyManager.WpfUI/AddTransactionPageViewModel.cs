@@ -16,6 +16,9 @@ namespace MoneyManager.WpfUI.ViewModels
         private string description;
         private string selectedType;
 
+        private bool isEditMode = false;
+        private int editTransactionId;
+
         public string Sum
         {
             get { return sum; }
@@ -49,11 +52,34 @@ namespace MoneyManager.WpfUI.ViewModels
             CancelCommand = new RelayCommand(param => this.navigationService.GoBack());
         }
 
-        private void Save(object? parameter)
+        //private async void Save(object? parameter)
+        //{
+        //    if (decimal.TryParse(Sum, out decimal amount))
+        //    {
+        //        service.AddTransaction(WalletId, amount, SelectedType, Description ?? "");
+        //        await service.SaveData();
+        //        navigationService.GoBack();
+        //    }
+        //}
+
+        public void Init(TransactionListDto transaction)
+        {
+            Sum = transaction.Sum.ToString();
+            Description = transaction.Description;
+            SelectedType = transaction.Type;
+            editTransactionId = transaction.Id;
+            isEditMode = true;
+        }
+
+        private async void Save(object? parameter)
         {
             if (decimal.TryParse(Sum, out decimal amount))
             {
-                service.AddTransaction(WalletId, amount, SelectedType, Description ?? "");
+                if (isEditMode)
+                    service.UpdateTransaction(editTransactionId, amount, SelectedType, Description ?? "");
+                else
+                    service.AddTransaction(WalletId, amount, SelectedType, Description ?? "");
+                await service.SaveData();
                 navigationService.GoBack();
             }
         }

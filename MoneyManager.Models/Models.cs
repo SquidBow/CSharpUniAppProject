@@ -1,5 +1,7 @@
 namespace MoneyManager.Models;
 
+using System.Text.Json.Serialization;
+
 public enum Currencies { UAH, USD, EUR }
 public enum Spending { None, Cafe, Groceries, Car }
 
@@ -9,7 +11,6 @@ public class Wallet
     public string Name { get; set; }
     public Currencies Currency { get; set; }
     public List<int> TransactionIds { get; } = new();
-
     public Wallet(int id, string name, Currencies currency)
     {
         Id = id;
@@ -20,14 +21,15 @@ public class Wallet
 
 public class Transaction
 {
-    public int Id { get; }
-    public int WalletId { get; }
+    public int Id { get; init; }
+    public int WalletId { get; init; }
     public decimal Sum { get; set; }
     public Spending Type { get; set; }
     public string Description { get; set; }
-    public DateTime Date { get; set; }
+    public DateTime? Date { get; set; }
     public bool IsExpense => Sum < 0;
 
+    [JsonConstructor]
     public Transaction(int id, int walletId, decimal sum, Spending type, string description, DateTime? date = null)
     {
         Id = id;

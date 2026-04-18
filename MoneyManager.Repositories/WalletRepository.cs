@@ -1,6 +1,7 @@
 ﻿using MoneyManager.Models;
 using MoneyManager.Storage;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MoneyManager.Repositories;
 
@@ -31,5 +32,15 @@ public class WalletRepository : IWalletRepository
     public void Remove(int id)
     {
         storage.Wallets.RemoveAll(w => w.Id == id);
+    }
+
+    public async Task SaveData()
+    {
+        await storage.SaveData();
+    }
+
+    public async Task LoadData()
+    {
+        await storage.LoadData();
     }
 }

@@ -1,5 +1,6 @@
 using MoneyManager.Models;
 using MoneyManager.Repositories;
+using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,4 +108,42 @@ public class AppService : IAppService
         transactionRepo.Add(transaction);
         wallet.TransactionIds.Add(transaction.Id);
     }
+
+    public async Task SaveData()
+    {
+        await walletRepo.SaveData();
+    }
+
+    public async Task LoadData()
+    {
+        await walletRepo.LoadData();
+    }
+
+    public void UpdateWallet(int id, string name, string currency)
+    {
+        var wallet = walletRepo.GetById(id);
+        if (wallet == null) return;
+        wallet.Name = name;
+        wallet.Currency = Enum.Parse<Currencies>(currency);
+    }
+
+    public Wallet? GetWalletById(int id)
+    {
+        return walletRepo.GetById(id);
+    }
+
+    public Transaction? GetTransactionById(int id)
+    {
+        return transactionRepo.GetById(id);
+    }
+
+    public void UpdateTransaction(int id, decimal sum, string type, string description)
+    {
+        var transaction = transactionRepo.GetById(id);
+        if (transaction == null) return;
+        transaction.Sum = sum;
+        transaction.Type = Enum.Parse<Spending>(type);
+        transaction.Description = description;
+    }
 }
+

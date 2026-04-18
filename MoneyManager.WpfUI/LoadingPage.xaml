@@ -1,0 +1,19 @@
+﻿<Page x:Class="MoneyManager.WpfUI.LoadingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="LoadingPage">
+    <Grid Background="White">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="Money Manager"
+            FontSize="28" FontWeight="Bold"
+            Margin="0,0,0,10" HorizontalAlignment="Center"/>
+
+            <TextBlock Text="Loading your data..."
+            FontSize="16" Foreground="Gray"
+            Margin="0,0,0,30" HorizontalAlignment="Center"/>
+
+            <ProgressBar IsIndeterminate="True"
+            Width="250" Height="15"/>
+        </StackPanel>
+    </Grid>
+</Page>
